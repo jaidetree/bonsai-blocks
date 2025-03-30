@@ -50,6 +50,26 @@ defmodule BonsaiBlocks.Config do
   end
 
   @doc """
+  Merges provided options with default configuration.
+
+  ## Examples
+
+      iex> BonsaiBlocks.Config.merge_options(api_token: "my_token", timeout: 60000)
+      %{
+        api_token: "my_token",
+        rate_limit_requests_per_second: 3,
+        max_retries: 5,
+        backoff_initial_delay: 1000,
+        backoff_max_delay: 30000,
+        timeout: 60000
+      }
+  """
+  def merge_options(options) when is_list(options) do
+    options_map = Enum.into(options, %{})
+    Map.merge(@default_config, options_map)
+  end
+
+  @doc """
   Validates the configuration.
 
   Ensures that required configuration values are present and valid.
