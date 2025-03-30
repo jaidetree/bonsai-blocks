@@ -1,7 +1,12 @@
 defmodule BonsaiBlocks do
   @moduledoc """
-  Documentation for `BonsaiBlocks`.
+  BonsaiBlocks is a library for transforming Notion blocks into HTML.
   """
+
+  alias BonsaiBlocks.Api
+  alias BonsaiBlocks.Config
+  alias BonsaiBlocks.Html
+  alias BonsaiBlocks.Transform
 
   @doc """
   Hello world.
