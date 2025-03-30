@@ -70,6 +70,36 @@ defmodule BonsaiBlocks.Config do
   end
 
   @doc """
+  Validates options to ensure required values are present.
+
+  ## Examples
+
+      iex> BonsaiBlocks.Config.validate_options(%{api_token: "secret_token"})
+      :ok
+
+      iex> BonsaiBlocks.Config.validate_options(%{})
+      {:error, "Missing required option: api_token"}
+
+      iex> BonsaiBlocks.Config.validate_options(%{api_token: ""})
+      {:error, "Invalid api_token: cannot be empty"}
+  """
+  def validate_options(options) when is_map(options) do
+    cond do
+      is_nil(options[:api_token]) ->
+        {:error, "Missing required option: api_token"}
+
+      options[:api_token] == "" ->
+        {:error, "Invalid api_token: cannot be empty"}
+
+      not is_binary(options[:api_token]) ->
+        {:error, "Invalid api_token: must be a string"}
+
+      true ->
+        :ok
+    end
+  end
+
+  @doc """
   Validates the configuration.
 
   Ensures that required configuration values are present and valid.
@@ -88,6 +118,12 @@ defmodule BonsaiBlocks.Config do
     cond do
       is_nil(config[:api_token]) ->
         {:error, "Missing required configuration: api_token"}
+
+      config[:api_token] == "" ->
+        {:error, "Invalid api_token: cannot be empty"}
+
+      not is_binary(config[:api_token]) ->
+        {:error, "Invalid api_token: must be a string"}
 
       true ->
         :ok
