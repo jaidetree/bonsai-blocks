@@ -51,7 +51,7 @@ defmodule BonsaiBlocks.ConfigTest do
   end
 
   describe "validate/1" do
-    test "returns :ok for valid options" do
+    test "returns {:ok, config} for valid options" do
       options = %{api_token: "valid_token"}
       assert Config.validate(options) == {:ok, options}
     end
