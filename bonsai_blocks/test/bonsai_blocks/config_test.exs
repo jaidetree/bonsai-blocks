@@ -3,9 +3,19 @@ defmodule BonsaiBlocks.ConfigTest do
   alias BonsaiBlocks.Config
 
   describe "create/1" do
-    test "merges provided options with defaults" do
+    test "merges provided map options with defaults" do
       options = %{api_token: "custom_token", timeout: 45000}
-      config = Config.create!(options)
+      {:ok, config} = Config.create(options)
+
+      assert config.api_token == "custom_token"
+      assert config.timeout == 45000
+      assert config.rate_limit_requests_per_second == 3
+      assert config.max_retries == 5
+    end
+
+    test "merges provided keyword options with defaults" do
+      options = [api_token: "custom_token", timeout: 45000]
+      {:ok, config} = Config.create(options)
 
       assert config.api_token == "custom_token"
       assert config.timeout == 45000
@@ -14,13 +24,29 @@ defmodule BonsaiBlocks.ConfigTest do
     end
 
     test "custom options override defaults" do
-      options = %{api_token: "custom_token", rate_limit_requests_per_second: 10, max_retries: 8}
-      config = Config.create!(options)
+      options = [api_token: "custom_token", rate_limit_requests_per_second: 10, max_retries: 8]
+      {:ok, config} = Config.create(options)
 
       assert config.rate_limit_requests_per_second == 10
       assert config.max_retries == 8
       # Default value
       assert config.backoff_initial_delay == 5000
+    end
+  end
+
+  describe "create!/1" do
+    test "returns config directly when valid" do
+      options = %{api_token: "custom_token"}
+      config = Config.create!(options)
+
+      assert config.api_token == "custom_token"
+      assert config.rate_limit_requests_per_second == 3
+    end
+
+    test "raises ArgumentError when invalid" do
+      assert_raise ArgumentError, fn ->
+        Config.create!(%{})
+      end
     end
   end
 

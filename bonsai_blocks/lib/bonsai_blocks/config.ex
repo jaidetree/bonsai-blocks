@@ -48,23 +48,28 @@ defmodule BonsaiBlocks.Config do
   }
 
   @doc """
-  Merges provided options with default configuration.
+  Creates a configuration map by merging provided options with defaults.
 
   ## Parameters
 
-  * `options` - A keyword list of configuration options.
+  * `options` - A map of configuration options.
+
+  ## Returns
+
+  * `{:ok, config}` - If the configuration is valid.
+  * `{:error, reason}` - If the configuration is invalid.
 
   ## Examples
 
-      iex> BonsaiBlocks.Config.create(api_token: "my_token", timeout: 60000)
-      %{
+      iex> BonsaiBlocks.Config.create(%{api_token: "my_token", timeout: 60000})
+      {:ok, %{
         api_token: "my_token",
         rate_limit_requests_per_second: 3,
         max_retries: 5,
-        backoff_initial_delay: 1000,
-        backoff_max_delay: 30000,
+        backoff_initial_delay: 5000,
+        backoff_max_delay: 120_000,
         timeout: 60000
-      }
+      }}
   """
   @spec create(config()) :: validation_result()
   def create(options) when is_map(options) do
@@ -72,16 +77,96 @@ defmodule BonsaiBlocks.Config do
   end
 
   @doc """
+  Creates a configuration map by merging provided keyword options with defaults.
+
+  ## Parameters
+
+  * `options` - A keyword list of configuration options.
+
+  ## Returns
+
+  * `{:ok, config}` - If the configuration is valid.
+  * `{:error, reason}` - If the configuration is invalid.
+
+  ## Examples
+
+      iex> BonsaiBlocks.Config.create([api_token: "my_token", timeout: 60000])
+      {:ok, %{
+        api_token: "my_token",
+        rate_limit_requests_per_second: 3,
+        max_retries: 5,
+        backoff_initial_delay: 5000,
+        backoff_max_delay: 120_000,
+        timeout: 60000
+      }}
   """
-  @spec create!(config()) :: config()
-  def create!(options \\ %{}) when is_map(options) do
+  @spec create(keyword()) :: validation_result()
+  def create(options) when is_list(options) do
+    options |> Enum.into(%{}) |> create()
+  end
+
+  @doc """
+  Creates a configuration map and raises an error if invalid.
+
+  ## Parameters
+
+  * `options` - A map or keyword list of configuration options.
+
+  ## Returns
+
+  * The validated configuration map.
+
+  ## Raises
+
+  * `ArgumentError` - If the configuration is invalid.
+
+  ## Examples
+
+      iex> BonsaiBlocks.Config.create!(%{api_token: "my_token"})
+      %{
+        api_token: "my_token",
+        rate_limit_requests_per_second: 3,
+        max_retries: 5,
+        backoff_initial_delay: 5000,
+        backoff_max_delay: 120_000,
+        timeout: 30000
+      }
+  """
+  @spec create!(config() | keyword()) :: config()
+  def create!(options \\ %{})
+
+  def create!(options) when is_map(options) do
     case create(options) do
       {:ok, config} -> config
       {:error, reason} -> raise ArgumentError, reason
     end
   end
 
+  def create!(options) when is_list(options) do
+    options |> Enum.into(%{}) |> create!()
+  end
+
   @doc """
+  Validates a configuration map.
+
+  Checks that required options are present and have valid values.
+
+  ## Parameters
+
+  * `options` - A map of configuration options.
+
+  ## Returns
+
+  * `{:ok, config}` - If the configuration is valid.
+  * `{:error, reason}` - If the configuration is invalid.
+
+  ## Examples
+
+      iex> BonsaiBlocks.Config.validate(%{api_token: "valid_token"})
+      {:ok, %{api_token: "valid_token"}}
+
+      iex> BonsaiBlocks.Config.validate(%{})
+      {:error, "Missing required option: api_token"}
   """
   @spec validate(config()) :: validation_result()
   def validate(options) when is_map(options) do
