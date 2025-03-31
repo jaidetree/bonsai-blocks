@@ -52,7 +52,7 @@ defmodule BonsaiBlocks.Config do
 
   ## Parameters
 
-  * `options` - A map of configuration options.
+  * `options` - A map of configuration options or keyword list.
 
   ## Returns
 
@@ -70,27 +70,8 @@ defmodule BonsaiBlocks.Config do
         backoff_max_delay: 120_000,
         timeout: 60000
       }}
-  """
-  @spec create(config()) :: validation_result()
-  def create(options) when is_map(options) do
-    Map.merge(@default_config, options) |> validate()
-  end
 
-  @doc """
-  Creates a configuration map by merging provided keyword options with defaults.
-
-  ## Parameters
-
-  * `options` - A keyword list of configuration options.
-
-  ## Returns
-
-  * `{:ok, config}` - If the configuration is valid.
-  * `{:error, reason}` - If the configuration is invalid.
-
-  ## Examples
-
-      iex> BonsaiBlocks.Config.create([api_token: "my_token", timeout: 60000])
+      iex> BonsaiBlocks.Config.create([api_token: "custom_token", timeout: 45000])
       {:ok, %{
         api_token: "my_token",
         rate_limit_requests_per_second: 3,
@@ -100,6 +81,11 @@ defmodule BonsaiBlocks.Config do
         timeout: 60000
       }}
   """
+  @spec create(config()) :: validation_result()
+  def create(options) when is_map(options) do
+    Map.merge(@default_config, options) |> validate()
+  end
+
   @spec create(keyword()) :: validation_result()
   def create(options) when is_list(options) do
     options |> Enum.into(%{}) |> create()

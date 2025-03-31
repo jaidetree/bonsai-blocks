@@ -4,23 +4,23 @@ This checklist covers the implementation of Bonsai-Blocks, an Elixir library for
 
 ## Iteration 1: Project Setup and Basic Structure
 
-- [ ] Create new Elixir project 
-  - [ ] Run `mix new bonsai_blocks --module BonsaiBlocks`
-  - [ ] Initialize git repository
-  - [ ] Make initial commit
+- [x] Create new Elixir project
+  - [x] Run `mix new bonsai_blocks --module BonsaiBlocks`
+  - [x] Initialize git repository
+  - [x] Make initial commit
 
-- [ ] Configure dependencies in mix.exs
-  - [ ] Add HTTP client (Req or HTTPoison)
-  - [ ] Add JSON parser (Jason)
-  - [ ] Add ExDoc for documentation
-  - [ ] Add testing utilities (ExUnit comes built-in)
+- [x] Configure dependencies in mix.exs
+  - [x] Add HTTP client (Req or HTTPoison)
+  - [x] Add JSON parser (Jason)
+  - [x] Add ExDoc for documentation
+  - [x] Add testing utilities (ExUnit comes built-in)
 
-- [ ] Set up basic module structure
-  - [ ] Create `lib/bonsai_blocks.ex` for main API
-  - [ ] Create `lib/bonsai_blocks/api.ex` for Notion API communication
-  - [ ] Create `lib/bonsai_blocks/config.ex` for configuration handling
-  - [ ] Create `lib/bonsai_blocks/html.ex` for HTML generation
-  - [ ] Create `lib/bonsai_blocks/transform.ex` for block transformations
+- [x] Set up basic module structure
+  - [x] Create `lib/bonsai_blocks.ex` for main API
+  - [x] Create `lib/bonsai_blocks/api.ex` for Notion API communication
+  - [x] Create `lib/bonsai_blocks/config.ex` for configuration handling
+  - [x] Create `lib/bonsai_blocks/html.ex` for HTML generation
+  - [x] Create `lib/bonsai_blocks/transform.ex` for block transformations
 
 - [ ] Write initial README
   - [ ] Project overview and purpose
@@ -29,16 +29,16 @@ This checklist covers the implementation of Bonsai-Blocks, an Elixir library for
   - [ ] License information
 
 - [ ] Set up GitHub repository
-  - [ ] Add .gitignore file for Elixir
+  - [x] Add .gitignore file for Elixir
   - [ ] Create initial project description
   - [ ] Push initial code
 
 ## Iteration 2: Notion API Authentication and Configuration
 
-- [ ] Create configuration module
-  - [ ] Implement default configuration options
-  - [ ] Allow runtime configuration override
-  - [ ] Add validation for required options
+- [x] Create configuration module
+  - [x] Implement default configuration options
+  - [x] Allow runtime configuration override
+  - [x] Add validation for required options
 
 - [ ] Build authentication functionality
   - [ ] Implement Notion API token handling
