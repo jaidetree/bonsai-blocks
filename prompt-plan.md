@@ -7,15 +7,15 @@ This document contains a series of prompts designed for a code-generation LLM to
 This prompt creates the initial project structure with dependencies and basic module scaffolding.
 
 ```text
-Update the mix.exs file with the following dependencies:
+Create a new Elixir project called "bonsai_blocks" with a module called "BonsaiBlocks" for converting Notion blocks to HTML. Set up the mix.exs file with the following dependencies:
 - Jason for JSON parsing
 - Req for HTTP requests
 - Ex_doc for documentation
 
-Create the following empty module files:
+Create the following empty module files with appropriate module documentation:
 1. lib/bonsai_blocks.ex - Main API module
 2. lib/bonsai_blocks/config.ex - Configuration handling
-3. lib/bonsai_blocks/api.ex - Notion API communication
+3. lib/bonsai_blocks/notion/api.ex - Notion API communication
 4. lib/bonsai_blocks/html.ex - HTML generation
 5. lib/bonsai_blocks/transform.ex - Block transformation
 
@@ -58,7 +58,7 @@ defmodule BonsaiBlocks.Config do
   @moduledoc """
   Configuration handling for BonsaiBlocks
   """
-
+  
   # Define default options
   # Implement merge_options/1
   # Implement validate_options/1
@@ -93,13 +93,13 @@ Make sure to:
 
 Here's the module structure to implement:
 
-defmodule BonsaiBlocks.API do
+defmodule BonsaiBlocks.Notion.API do
   @moduledoc """
   Handles communication with the Notion API
   """
-
+  
   require Logger
-
+  
   # Define Notion API constants
   # Implement get_blocks/2
   # Add helper functions for authentication, requests, error handling
@@ -111,7 +111,7 @@ end
 This prompt creates a simple test file to verify the basic API functionality.
 
 ```text
-Create a test file for the BonsaiBlocks.API module that tests the basic functionality of fetching blocks from the Notion API. Use ExUnit's test mocking capabilities to avoid making actual API calls.
+Create a test file for the BonsaiBlocks.Notion.API module that tests the basic functionality of fetching blocks from the Notion API. Use ExUnit's test mocking capabilities to avoid making actual API calls.
 
 The test should:
 
@@ -120,7 +120,7 @@ The test should:
 3. Test error handling with various error responses (unauthorized, rate limited, etc.)
 4. Include at least one test for configuration validation
 
-Create the test file at test/bonsai_blocks/api_test.exs with proper setup and teardown. Include a sample Notion API response as a fixture for testing.
+Create the test file at test/bonsai_blocks/notion/api_test.exs with proper setup and teardown. Include a sample Notion API response as a fixture for testing.
 
 Follow Elixir testing best practices and make sure the tests are comprehensive but focused on the specific functionality being tested.
 ```
@@ -152,7 +152,7 @@ defmodule BonsaiBlocks.HTML do
   @moduledoc """
   Converts Hiccup-inspired data structures to HTML
   """
-
+  
   # Define hiccup_to_html/1
   # Add helpers for attributes, content, and escaping
   # Handle special cases like void elements
@@ -190,7 +190,7 @@ defmodule BonsaiBlocks.Transform do
   @moduledoc """
   Transforms Notion blocks to Hiccup-inspired data structures
   """
-
+  
   # Define transform_blocks/2
   # Implement default_mappings/0
   # Implement individual mappers for each block type
@@ -203,13 +203,13 @@ end
 This prompt implements the main BonsaiBlocks module that ties everything together.
 
 ```text
-Implement the main BonsaiBlocks module that integrates all the previously created modules (Config, API, HTML, Transform) to provide the public API for the library.
+Implement the main BonsaiBlocks module that integrates all the previously created modules (Config, Notion.API, HTML, Transform) to provide the public API for the library.
 
 Implement the following functions as specified in the project requirements:
 
 1. fetch_blocks/2:
    - Takes a page_id and options
-   - Uses BonsaiBlocks.API to fetch blocks from Notion
+   - Uses BonsaiBlocks.Notion.API to fetch blocks from Notion
    - Returns {:ok, blocks} or {:error, reason}
 
 2. blocks_to_html/2:
@@ -231,7 +231,7 @@ defmodule BonsaiBlocks do
   @moduledoc """
   BonsaiBlocks: Convert Notion blocks to HTML
   """
-
+  
   # Implement fetch_blocks/2
   # Implement blocks_to_html/2
   # Implement page_to_html/3
@@ -289,7 +289,7 @@ Update the block mappers to use this new function.
 This prompt enhances the API client to handle pagination of Notion API responses.
 
 ```text
-Enhance the BonsaiBlocks.API module to support pagination when fetching blocks from the Notion API. The Notion API returns paginated results with a "next_cursor" when there are more blocks to fetch.
+Enhance the BonsaiBlocks.Notion.API module to support pagination when fetching blocks from the Notion API. The Notion API returns paginated results with a "next_cursor" when there are more blocks to fetch.
 
 Implement the following:
 
@@ -332,7 +332,7 @@ end
 This prompt enhances the API client to recursively fetch child blocks.
 
 ```text
-Enhance the BonsaiBlocks.API module to support recursive fetching of child blocks. Notion's API separates parent blocks from their children, so we need to fetch children separately and build a nested structure.
+Enhance the BonsaiBlocks.Notion.API module to support recursive fetching of child blocks. Notion's API separates parent blocks from their children, so we need to fetch children separately and build a nested structure.
 
 Implement the following:
 
@@ -381,11 +381,11 @@ end
 This prompt implements rate limiting and exponential backoff for API requests.
 
 ```text
-Enhance the BonsaiBlocks.API module to implement proper rate limiting and exponential backoff for API requests. The Notion API has rate limits, and we need to handle them gracefully.
+Enhance the BonsaiBlocks.Notion.API module to implement proper rate limiting and exponential backoff for API requests. The Notion API has rate limits, and we need to handle them gracefully.
 
 Implement the following:
 
-1. A RateLimiter module or functionality that:
+1. Add rate limiting functionality directly in the API module:
    - Limits requests to the configured requests_per_second
    - Adds appropriate delays between requests
    - Tracks and manages request quotas
@@ -411,12 +411,12 @@ The implementation should be robust and handle various error cases gracefully. U
 Here's a sketch of some functions to implement:
 
 ```elixir
-defmodule BonsaiBlocks.API.RateLimiter do
-  # Functions for rate limiting
-end
-
 defp make_request_with_backoff(url, headers, options, retry_count \\ 0) do
   # Implementation with exponential backoff
+end
+
+defp rate_limited_request(url, headers, options) do
+  # Implementation with rate limiting
 end
 ```
 
@@ -503,7 +503,7 @@ Here's a sketch of the functionality to implement:
 def transform_code_block(block) do
   language = get_in(block, [:code, :language]) || "plaintext"
   code_content = get_in(block, [:code, :rich_text]) |> extract_plain_text()
-
+  
   ["pre", %{},
     ["code", %{class: "language-#{language}"}, code_content]
   ]
@@ -551,7 +551,7 @@ Here's a sketch of the functionality to implement:
 def transform_image_block(block) do
   url = get_in(block, [:image, :file, :url]) || get_in(block, [:image, :external, :url])
   caption = get_in(block, [:image, :caption]) |> transform_rich_text()
-
+  
   if caption do
     ["figure", %{},
       [
@@ -623,7 +623,7 @@ end
 def custom_heading_mapper(block) do
   heading_level = block_type_to_heading_level(block.type)
   text = get_in(block, [String.to_atom(block.type), :rich_text]) |> transform_rich_text()
-
+  
   [String.to_atom("h#{heading_level}"), %{class: "custom-heading"}, text]
 end
 ```
@@ -696,7 +696,7 @@ You can customize how blocks are transformed to HTML:
 ```elixir
 mapping_functions = %{
   "heading_1" => fn block ->
-    ["h1", %{class: "custom-heading"},
+    ["h1", %{class: "custom-heading"}, 
      BonsaiBlocks.Transform.transform_rich_text(block.heading_1.rich_text)]
   end
 }
@@ -723,7 +723,7 @@ Implement the following:
    - Use consistent error tuples
    - Add context to errors
 
-2. Improve API error handling:
+2. Improve Notion API error handling:
    - Categorize Notion API errors
    - Provide meaningful error messages
    - Include relevant context (e.g., block ID, request details)
@@ -752,15 +752,15 @@ defmodule BonsaiBlocks.Error do
   @moduledoc """
   Error handling utilities for BonsaiBlocks
   """
-
+  
   def wrap_error({:error, reason}, context) do
     {:error, %{reason: reason, context: context}}
   end
-
+  
   def format_error({:error, %{reason: reason, context: context}}) do
     # Format error message with context
   end
-
+  
   # Add specific error handling functions
 end
 ```
@@ -805,25 +805,25 @@ Here's a sketch of what to implement:
 ```elixir
 defmodule BonsaiBlocks.IntegrationTest do
   use ExUnit.Case
-
+  
   # Setup mocks and fixtures
-
+  
   describe "page_to_html/3" do
     test "converts a page with various block types to HTML" do
       # Mock API responses
       # Call the function
       # Verify the HTML output
     end
-
+    
     test "handles errors gracefully" do
       # Mock API errors
       # Call the function
       # Verify error handling
     end
-
+    
     # More tests...
   end
-
+  
   # More describe blocks for other functions...
 end
 ```
@@ -969,7 +969,7 @@ Here's a sketch of what to implement:
 def transform_blocks(blocks, custom_mappings \\ %{}) do
   # Optimize by pre-computing merged mappings
   mappings = Map.merge(default_mappings(), custom_mappings)
-
+  
   # Process blocks efficiently
   Enum.map(blocks, fn block ->
     transform_block(block, mappings)

@@ -135,6 +135,18 @@ def transform_rich_text(rich_text_list) do
 end
 ```
 
+## Module Structure
+
+The library will be organized with the following module structure:
+
+- `BonsaiBlocks` - Main API module with public functions
+- `BonsaiBlocks.Config` - Configuration handling
+- `BonsaiBlocks.Notion` - Notion-specific functionality
+  - `BonsaiBlocks.Notion.API` - Notion API communication
+- `BonsaiBlocks.HTML` - HTML generation
+- `BonsaiBlocks.Transform` - Block transformation
+- `BonsaiBlocks.Error` - Error handling utilities
+
 ## Testing Approach
 
 1. Initial development with live Notion API data

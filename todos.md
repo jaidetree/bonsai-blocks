@@ -17,7 +17,8 @@ This checklist covers the implementation of Bonsai-Blocks, an Elixir library for
 
 - [x] Set up basic module structure
   - [x] Create `lib/bonsai_blocks.ex` for main API
-  - [x] Create `lib/bonsai_blocks/api.ex` for Notion API communication
+  - [x] Create `lib/bonsai_blocks/notion/` directory for Notion submodule
+  - [x] Create `lib/bonsai_blocks/notion/api.ex` for Notion API communication
   - [x] Create `lib/bonsai_blocks/config.ex` for configuration handling
   - [x] Create `lib/bonsai_blocks/html.ex` for HTML generation
   - [x] Create `lib/bonsai_blocks/transform.ex` for block transformations
@@ -174,7 +175,7 @@ This checklist covers the implementation of Bonsai-Blocks, an Elixir library for
 
 ## Iteration 7: Pagination Support
 
-- [ ] Update API client for pagination
+- [ ] Update Notion API client for pagination
   - [ ] Add support for start_cursor parameter
   - [ ] Handle has_more flag in response
   - [ ] Extract next_cursor from response
@@ -229,7 +230,7 @@ This checklist covers the implementation of Bonsai-Blocks, an Elixir library for
 
 ## Iteration 9: Rate Limiting and Exponential Backoff
 
-- [ ] Implement rate limiter
+- [ ] Implement rate limiting in Notion API module
   - [ ] Create token bucket algorithm
   - [ ] Configure requests per second
   - [ ] Add delay mechanism for rate control
@@ -245,7 +246,7 @@ This checklist covers the implementation of Bonsai-Blocks, an Elixir library for
   - [ ] Add backoff_initial_delay option
   - [ ] Add backoff_max_delay option
 
-- [ ] Integrate with API client
+- [ ] Integrate with Notion API client
   - [ ] Apply rate limiting to all requests
   - [ ] Add retry logic with backoff
   - [ ] Add logging for rate limits and retries
