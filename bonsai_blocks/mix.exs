@@ -25,7 +25,8 @@ defmodule BonsaiBlocks.MixProject do
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
       {:jason, "~> 1.4"},
       {:req, "~> 0.4.0"},
-      {:ex_doc, "~> 0.30.0", only: :dev, runtime: false}
+      {:ex_doc, "~> 0.30.0", only: :dev, runtime: false},
+      {:peri, "~> 0.3"}
     ]
   end
 end

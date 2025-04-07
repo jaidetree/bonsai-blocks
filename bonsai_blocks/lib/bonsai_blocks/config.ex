@@ -39,7 +39,6 @@ defmodule BonsaiBlocks.Config do
   @type validation_result :: {:ok, config()} | {:error, String.t()}
 
   @default_config %{
-    api_token: nil,
     rate_limit_requests_per_second: 3,
     max_retries: 5,
     backoff_initial_delay: 5000,
@@ -61,16 +60,6 @@ defmodule BonsaiBlocks.Config do
 
   ## Examples
 
-      iex> BonsaiBlocks.Config.create(%{api_token: "my_token", timeout: 60000})
-      {:ok, %{
-        api_token: "my_token",
-        rate_limit_requests_per_second: 3,
-        max_retries: 5,
-        backoff_initial_delay: 5000,
-        backoff_max_delay: 120_000,
-        timeout: 60000
-      }}
-
       iex> BonsaiBlocks.Config.create([api_token: "custom_token", timeout: 45000])
       {:ok, %{
         api_token: "my_token",
@@ -81,14 +70,9 @@ defmodule BonsaiBlocks.Config do
         timeout: 60000
       }}
   """
-  @spec create(config()) :: validation_result()
-  def create(options) when is_map(options) do
-    Map.merge(@default_config, options) |> validate()
-  end
-
   @spec create(keyword()) :: validation_result()
   def create(options) when is_list(options) do
-    options |> Enum.into(%{}) |> create()
+    options |> Enum.into(%{}) |> Map.merge(@default_config) |> validate()
   end
 
   @doc """
@@ -96,7 +80,7 @@ defmodule BonsaiBlocks.Config do
 
   ## Parameters
 
-  * `options` - A map or keyword list of configuration options.
+  * `options` - A keyword list of configuration options.
 
   ## Returns
 
@@ -108,7 +92,7 @@ defmodule BonsaiBlocks.Config do
 
   ## Examples
 
-      iex> BonsaiBlocks.Config.create!(%{api_token: "my_token"})
+      iex> BonsaiBlocks.Config.create!(api_token: "my_token")
       %{
         api_token: "my_token",
         rate_limit_requests_per_second: 3,
@@ -118,18 +102,16 @@ defmodule BonsaiBlocks.Config do
         timeout: 30000
       }
   """
-  @spec create!(config() | keyword()) :: config()
-  def create!(options \\ %{})
+  @spec create!(keyword()) :: config()
+  def create!(options \\ []) when is_list(options) do
+    config = options |> Enum.into(%{}) |> Map.merge(@default_config)
+    IO.inspect(config)
+    result = config |> validate()
 
-  def create!(options) when is_map(options) do
-    case create(options) do
+    case result do
       {:ok, config} -> config
       {:error, reason} -> raise ArgumentError, reason
     end
-  end
-
-  def create!(options) when is_list(options) do
-    options |> Enum.into(%{}) |> create!()
   end
 
   @doc """
@@ -157,13 +139,13 @@ defmodule BonsaiBlocks.Config do
   @spec validate(config()) :: validation_result()
   def validate(options) when is_map(options) do
     cond do
-      is_nil(options[:api_token]) ->
+      is_nil(options.api_token) ->
         {:error, "Missing required option: api_token"}
 
-      options[:api_token] == "" ->
+      options.api_token == "" ->
         {:error, "Invalid api_token: cannot be empty"}
 
-      not is_binary(options[:api_token]) ->
+      not is_binary(options.api_token) ->
         {:error, "Invalid api_token: must be a string"}
 
       true ->
